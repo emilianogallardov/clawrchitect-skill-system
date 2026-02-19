@@ -49,9 +49,8 @@ export function InstallButton({ sourceUrl, sourceType, className }: InstallButto
   }
 
   const commands = [
-    { label: "OpenClaw CLI", value: info.command },
-    { label: "ClawHub", value: info.clawhubCommand },
-    ...(info.githubInstall ? [{ label: "From GitHub", value: info.githubInstall }] : []),
+    { label: "ClawHub", value: info.command },
+    { label: "npx (no install needed)", value: info.npxCommand },
   ]
 
   return (
