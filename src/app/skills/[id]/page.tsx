@@ -112,7 +112,7 @@ export default async function SkillDetailPage({
   const { skill, related_aidb_content, similar_skills } = data
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       {/* Hero */}
       <section className="space-y-4 pt-4">
         <div className="flex flex-wrap items-center gap-3">
@@ -166,7 +166,7 @@ export default async function SkillDetailPage({
       <Separator />
 
       {/* Metadata */}
-      <section className="grid grid-cols-2 gap-6 lg:grid-cols-4">
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* Tools */}
         <div className="min-w-0 space-y-2">
           <h3 className="font-mono text-xs text-muted-foreground">Tools Used</h3>
@@ -252,12 +252,12 @@ export default async function SkillDetailPage({
       {similar_skills.length > 0 && (
         <section className="space-y-4">
           <h2 className="font-mono text-sm text-muted-foreground">Similar Skills</h2>
-          <div className="flex gap-3 overflow-x-auto pb-2">
+          <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 scrollbar-hide sm:mx-0 sm:px-0">
             {similar_skills.map((sim) => (
               <Link
                 key={sim.id}
                 href={`/skills/${sim.id}`}
-                className="glow-warm flex min-w-[200px] max-w-[250px] shrink-0 flex-col gap-2 rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/30"
+                className="glow-warm flex w-[200px] shrink-0 snap-start flex-col gap-2 rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/30 sm:w-[220px]"
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="truncate font-mono text-sm text-primary">

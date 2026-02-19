@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { GlobalSearch } from "@/components/global-search"
 
 export function MobileNav() {
   const [open, setOpen] = useState(false)
@@ -11,7 +10,7 @@ export function MobileNav() {
     <div className="md:hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="flex h-9 w-9 items-center justify-center text-[#a89e8e] transition-colors hover:text-primary"
+        className="flex h-11 w-11 items-center justify-center text-[#a89e8e] transition-colors hover:text-primary"
         aria-label="Toggle navigation"
       >
         {open ? (
@@ -26,19 +25,18 @@ export function MobileNav() {
       </button>
       {open && (
         <div className="absolute left-0 right-0 top-14 border-b border-[#3a5040] bg-[#252e28] p-4">
-          <nav className="flex flex-col gap-3">
+          <nav className="flex flex-col gap-4">
             <Link
               href="/"
               onClick={() => setOpen(false)}
-              className="font-mono text-sm text-[#a89e8e] transition-colors hover:text-primary"
+              className="py-1 font-mono text-sm text-[#a89e8e] transition-colors hover:text-primary"
             >
               Home
             </Link>
-            <GlobalSearch />
             <Link
               href="/compare"
               onClick={() => setOpen(false)}
-              className="font-mono text-sm text-[#a89e8e] transition-colors hover:text-primary"
+              className="py-1 font-mono text-sm text-[#a89e8e] transition-colors hover:text-primary"
             >
               Compare
             </Link>

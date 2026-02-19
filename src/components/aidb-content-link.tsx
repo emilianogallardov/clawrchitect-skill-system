@@ -42,19 +42,19 @@ export function AidbContentLink({
         }
       }}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-md border border-border px-2 py-0.5 text-[10px] text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground cursor-pointer",
+        "inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground cursor-pointer",
         className
       )}
     >
       <span
         className={cn(
-          "flex h-4 w-4 items-center justify-center rounded font-mono text-[8px] font-bold",
+          "flex h-5 w-5 items-center justify-center rounded font-mono text-[10px] font-bold shrink-0",
           typeColors[content_type]
         )}
       >
         {typeIcons[content_type]}
       </span>
-      <span className="max-w-[100px] truncate">{title}</span>
+      <span className="max-w-[120px] truncate sm:max-w-[100px]">{title}</span>
     </button>
   )
 }

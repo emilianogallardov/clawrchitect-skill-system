@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import { TrendingGrid } from "@/components/trending-grid"
 import { Skeleton } from "@/components/ui/skeleton"
 import { BookmarkedSkills } from "@/components/bookmarked-skills"
+import { GlobalSearch } from "@/components/global-search"
 import { createServerClient } from "@/lib/supabase/server"
 import type { TrendingSkill, AidbContentMatch } from "@/types"
 
@@ -166,15 +167,18 @@ async function NewSkillsSection() {
 
 export default function HomePage() {
   return (
-    <div className="space-y-12">
+    <div className="space-y-6 md:space-y-12">
       {/* Hero */}
-      <section className="flex flex-col items-center gap-6 pt-8 pb-4 text-center">
-        <h1 className="font-mono text-3xl font-bold uppercase text-brand sm:text-4xl">
+      <section className="flex flex-col items-center gap-4 pt-6 pb-2 text-center md:gap-6 md:pt-8 md:pb-4">
+        <h1 className="font-mono text-2xl font-bold uppercase text-brand sm:text-3xl md:text-4xl">
           Discover OpenClaw Skills
         </h1>
         <Suspense fallback={<p className="max-w-lg font-sans text-sm text-muted-foreground">Search and explore agent skills with vector-powered intelligence.</p>}>
           <HeroCount />
         </Suspense>
+        <div className="w-full max-w-md md:hidden">
+          <GlobalSearch />
+        </div>
       </section>
 
       {/* My Skills */}

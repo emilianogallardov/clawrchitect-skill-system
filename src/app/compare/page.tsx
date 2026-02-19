@@ -195,7 +195,7 @@ function CompareContent() {
                 {skill.name}
                 <button
                   onClick={() => removeSkill(skill.id)}
-                  className="ml-1 rounded-full p-0.5 hover:bg-destructive/20 hover:text-destructive"
+                  className="ml-1 rounded-full p-1 hover:bg-destructive/20 hover:text-destructive"
                   aria-label={`Remove ${skill.name}`}
                 >
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -237,7 +237,7 @@ function CompareContent() {
                 : "Search skills to compare..."
             }
             disabled={selectedSkills.length >= 5}
-            className="h-11 bg-card pl-10 font-mono text-sm text-foreground placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-primary/30"
+            className="h-11 bg-card pl-10 font-mono text-base text-foreground placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-primary/30 md:text-sm"
           />
 
           {/* Search Results Dropdown */}
@@ -280,7 +280,7 @@ function CompareContent() {
       {compareLoading && (
         <div className="space-y-6">
           <Skeleton className="mx-auto h-20 w-40 rounded-xl" />
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Skeleton className="h-64 rounded-xl" />
             <Skeleton className="h-64 rounded-xl" />
           </div>
@@ -315,8 +315,8 @@ function CompareContent() {
         <div className="space-y-8">
           {/* Similarity Score */}
           <div className="flex flex-col items-center gap-2">
-            <div className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-primary/40">
-              <span className="font-mono text-2xl font-bold text-primary">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-primary/40 sm:h-24 sm:w-24">
+              <span className="font-mono text-xl font-bold text-primary sm:text-2xl">
                 {Math.round(avgSimilarity * 100)}%
               </span>
             </div>
@@ -324,10 +324,12 @@ function CompareContent() {
           </div>
 
           {/* Side-by-side Skills */}
+          <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
           <div
             className="grid gap-4"
             style={{
-              gridTemplateColumns: `repeat(${comparison.skills.length}, minmax(0, 1fr))`,
+              gridTemplateColumns: `repeat(${comparison.skills.length}, minmax(260px, 1fr))`,
+              minWidth: comparison.skills.length > 2 ? `${comparison.skills.length * 280}px` : undefined,
             }}
           >
             {comparison.skills.map((skill) => (
@@ -432,6 +434,7 @@ function CompareContent() {
                 </CardContent>
               </Card>
             ))}
+          </div>
           </div>
 
           <Separator />

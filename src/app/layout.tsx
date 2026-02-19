@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import Link from "next/link"
 import "./globals.css"
@@ -15,9 +15,21 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 })
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#252e28",
+}
+
 export const metadata: Metadata = {
   title: "ClawCamp - OpenClaw Skill Intelligence",
   description: "Discover, search, and compare OpenClaw skills with vector-embedded intelligence powered by AIDB.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "ClawCamp",
+  },
   openGraph: {
     title: 'ClawCamp — OpenClaw Skill Intelligence',
     description: 'Search, compare, and discover OpenClaw skills with vector-powered intelligence. Connected to AIDB learning resources.',
@@ -67,7 +79,7 @@ export default function RootLayout({
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
+        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-4 md:py-8">
           {children}
         </main>
 
