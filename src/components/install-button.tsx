@@ -62,34 +62,34 @@ export function InstallButton({ sourceUrl, sourceType, className }: InstallButto
           e.stopPropagation()
           setOpen(!open)
         }}
-        className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 font-mono text-xs text-primary-foreground transition-colors hover:bg-primary/90 cursor-pointer"
+        className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 font-mono text-sm text-primary-foreground transition-colors hover:bg-primary/90 cursor-pointer"
       >
-        <Terminal className="h-3.5 w-3.5" />
+        <Terminal className="h-4 w-4" />
         Install
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-2 w-[380px] rounded-md border border-border bg-card p-4 shadow-lg">
+        <div className="absolute left-0 top-full z-50 mt-2 w-[calc(100vw-2rem)] max-w-[380px] rounded-md border border-border bg-card p-4 shadow-lg sm:w-[380px]">
           <div className="space-y-3">
             {commands.map((cmd, i) => (
               <div key={cmd.label}>
-                <p className="mb-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                <p className="mb-1 font-mono text-xs uppercase tracking-wider text-muted-foreground">
                   {cmd.label}
                 </p>
                 <div className="flex items-center gap-2 rounded border border-border bg-background px-3 py-2">
-                  <code className="flex-1 truncate font-mono text-xs text-foreground">
+                  <code className="flex-1 overflow-x-auto font-mono text-xs text-foreground">
                     {cmd.value}
                   </code>
                   <button
                     type="button"
                     onClick={() => handleCopy(cmd.value, i)}
-                    className="shrink-0 rounded p-1 text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
+                    className="shrink-0 rounded p-2 text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
                     aria-label={`Copy ${cmd.label} command`}
                   >
                     {copiedIdx === i ? (
-                      <Check className="h-3.5 w-3.5 text-primary" />
+                      <Check className="h-4 w-4 text-primary" />
                     ) : (
-                      <Copy className="h-3.5 w-3.5" />
+                      <Copy className="h-4 w-4" />
                     )}
                   </button>
                 </div>
@@ -103,34 +103,34 @@ export function InstallButton({ sourceUrl, sourceType, className }: InstallButto
                 href={info.rawUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 font-mono text-[10px] text-muted-foreground transition-colors hover:text-primary"
+                className="inline-flex items-center gap-1 font-mono text-xs text-muted-foreground transition-colors hover:text-primary"
               >
                 Download SKILL.md
-                <ExternalLink className="h-2.5 w-2.5" />
+                <ExternalLink className="h-3 w-3" />
               </a>
               <a
                 href="https://openclaw.ai"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-[10px] text-muted-foreground transition-colors hover:text-primary"
+                className="font-mono text-xs text-muted-foreground transition-colors hover:text-primary"
               >
                 Don&apos;t have OpenClaw?
               </a>
             </div>
-            <div className="flex items-center gap-2 rounded border border-dashed border-border bg-background/50 px-3 py-1.5">
-              <code className="flex-1 truncate font-mono text-[10px] text-muted-foreground">
+            <div className="flex items-center gap-2 rounded border border-dashed border-border bg-background/50 px-3 py-2">
+              <code className="flex-1 overflow-x-auto font-mono text-xs text-muted-foreground">
                 {info.installScript}
               </code>
               <button
                 type="button"
                 onClick={() => handleCopy(info.installScript, 99)}
-                className="shrink-0 rounded p-0.5 text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
+                className="shrink-0 rounded p-2 text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
                 aria-label="Copy install script"
               >
                 {copiedIdx === 99 ? (
-                  <Check className="h-3 w-3 text-primary" />
+                  <Check className="h-4 w-4 text-primary" />
                 ) : (
-                  <Copy className="h-3 w-3" />
+                  <Copy className="h-4 w-4" />
                 )}
               </button>
             </div>

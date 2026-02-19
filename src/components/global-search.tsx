@@ -98,27 +98,27 @@ export function GlobalSearch() {
   return (
     <div ref={containerRef} className="relative">
       <div className="relative">
-        <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#7a7264]" />
+        <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#7a7264]" />
         <Input
           type="text"
           value={query}
           onChange={(e) => handleChange(e.target.value)}
           onFocus={() => { if (query.trim() && results.length > 0) setOpen(true) }}
           placeholder="Search skills..."
-          className="h-8 w-full border-[#3a5040] bg-[#1e2820] pl-8 font-mono text-xs text-[#e4ded2] placeholder:text-[#7a7264] focus-visible:border-primary focus-visible:ring-primary/30 md:w-[260px]"
+          className="h-10 w-full border-[#3a5040] bg-[#1e2820] pl-9 font-mono text-base text-[#e4ded2] placeholder:text-[#7a7264] focus-visible:border-primary focus-visible:ring-primary/30 md:w-[260px] md:text-sm"
         />
       </div>
 
       {open && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-1 overflow-hidden rounded-md border border-border bg-card shadow-lg md:w-[360px]">
+        <div className="absolute left-0 right-0 top-full z-50 mt-1 max-w-[calc(100vw-2rem)] overflow-hidden rounded-md border border-border bg-card shadow-lg md:w-[360px]">
           {loading && (
-            <p className="px-3 py-2 font-mono text-xs text-muted-foreground">
+            <p className="px-4 py-3 font-mono text-xs text-muted-foreground">
               Searching...
             </p>
           )}
 
           {!loading && results.length === 0 && query.trim() && (
-            <p className="px-3 py-2 font-mono text-xs text-muted-foreground">
+            <p className="px-4 py-3 font-mono text-xs text-muted-foreground">
               No results for &ldquo;{query}&rdquo;
             </p>
           )}
@@ -130,14 +130,14 @@ export function GlobalSearch() {
                   <button
                     type="button"
                     onClick={() => navigateTo(result.id)}
-                    className="flex w-full items-start gap-2 px-3 py-2 text-left transition-colors hover:bg-primary/5 cursor-pointer"
+                    className="flex w-full items-start gap-2 px-4 py-3 text-left transition-colors hover:bg-primary/5 cursor-pointer"
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-mono text-xs text-brand">
+                      <p className="truncate font-mono text-sm text-brand">
                         {result.name}
                       </p>
                       {result.description && (
-                        <p className="truncate font-sans text-[10px] text-muted-foreground">
+                        <p className="truncate font-sans text-xs text-muted-foreground">
                           {result.description}
                         </p>
                       )}
@@ -145,7 +145,7 @@ export function GlobalSearch() {
                     <Badge
                       variant="outline"
                       className={cn(
-                        "shrink-0 text-[9px]",
+                        "shrink-0 text-[10px]",
                         result.category !== "uncategorized" && "border-primary/30 text-primary"
                       )}
                     >

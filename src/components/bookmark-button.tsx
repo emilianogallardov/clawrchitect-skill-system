@@ -31,8 +31,8 @@ export function BookmarkButton({
       className={cn(
         "inline-flex items-center gap-1.5 transition-colors cursor-pointer",
         variant === "icon"
-          ? "p-1 rounded hover:bg-primary/10"
-          : "rounded-md border border-border px-3 py-1.5 text-sm font-mono hover:border-primary/30",
+          ? "p-2 rounded-lg hover:bg-primary/10"
+          : "rounded-md border border-border px-4 py-2 text-sm font-mono hover:border-primary/30",
         className
       )}
       aria-label={active ? "Remove bookmark" : "Bookmark skill"}
