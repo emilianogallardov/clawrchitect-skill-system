@@ -9,12 +9,8 @@ import { SimilarityBadge } from "@/components/similarity-badge"
 import { BookmarkButton } from "@/components/bookmark-button"
 import { InstallButton } from "@/components/install-button"
 import { SkillInstructions } from "@/components/skill-instructions"
+import { createServerClient } from "@/lib/supabase/server"
 import type { Skill, AidbContentMatch } from "@/types"
-
-function getBaseUrl() {
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
-  return `http://localhost:${process.env.PORT ?? 3000}`
-}
 
 interface SkillDetailData {
   skill: Skill
@@ -29,11 +25,75 @@ interface SkillDetailData {
 
 async function fetchSkill(id: string): Promise<SkillDetailData | null> {
   try {
-    const res = await fetch(`${getBaseUrl()}/api/skills/${id}`, {
-      next: { revalidate: 300 },
-    })
-    if (!res.ok) return null
-    return await res.json()
+    const supabase = createServerClient()
+
+    const { data: skill, error } = await supabase
+      .from("skills")
+      .select("*, embedding")
+      .eq("id", id)
+      .single()
+
+    if (error || !skill) return null
+
+    // Get related AIDB content
+    let related_aidb_content: AidbContentMatch[] = []
+    if (skill.embedding) {
+      try {
+        const { data: aidbMatches } = await supabase.rpc("match_aidb_content", {
+          query_embedding: skill.embedding,
+          match_count: 5,
+        })
+        if (aidbMatches) {
+          related_aidb_content = aidbMatches.map((m: { id: string; title: string; content_type: string; description: string | null; url: string; published_at: string | null; transcript: string | null; youtube_video_id: string | null; similarity: number }) => ({
+            id: m.id,
+            title: m.title,
+            content_type: m.content_type as AidbContentMatch["content_type"],
+            description: m.description,
+            url: m.url,
+            published_at: m.published_at,
+            transcript: m.transcript ?? null,
+            youtube_video_id: m.youtube_video_id ?? null,
+            relevance_score: m.similarity,
+          }))
+        }
+      } catch {
+        // Non-critical
+      }
+    }
+
+    // Get similar skills
+    let similar_skills: Array<{ id: string; name: string; description: string | null; similarity: number }> = []
+    if (skill.embedding) {
+      try {
+        const { data: matches } = await supabase.rpc("search_skills", {
+          query_embedding: skill.embedding,
+          match_threshold: 0.5,
+          match_count: 6,
+        })
+        if (matches) {
+          similar_skills = matches
+            .filter((m: { id: string }) => m.id !== id)
+            .slice(0, 5)
+            .map((m: { id: string; name: string; description: string | null; similarity: number }) => ({
+              id: m.id,
+              name: m.name,
+              description: m.description,
+              similarity: m.similarity,
+            }))
+        }
+      } catch {
+        // Non-critical
+      }
+    }
+
+    const { embedding: _, ...skillData } = skill
+    void _
+
+    return {
+      skill: skillData as Skill,
+      related_aidb_content,
+      similar_skills,
+    }
   } catch {
     return null
   }

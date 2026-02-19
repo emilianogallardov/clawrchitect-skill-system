@@ -2,24 +2,109 @@ import { Suspense } from "react"
 import { TrendingGrid } from "@/components/trending-grid"
 import { Skeleton } from "@/components/ui/skeleton"
 import { BookmarkedSkills } from "@/components/bookmarked-skills"
-import type { TrendingSkill } from "@/types"
+import { createServerClient } from "@/lib/supabase/server"
+import type { TrendingSkill, AidbContentMatch } from "@/types"
 
 export const dynamic = "force-dynamic"
 
-function getBaseUrl() {
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
-  return `http://localhost:${process.env.PORT ?? 3000}`
-}
+const WINDOW_MS = 7 * 24 * 60 * 60 * 1000
 
 async function fetchTrending(sort: string, limit: number): Promise<{ skills: TrendingSkill[]; totalSkills: number }> {
   try {
-    const res = await fetch(
-      `${getBaseUrl()}/api/skills/trending?window=7d&sort=${sort}&limit=${limit}`,
-      { next: { revalidate: 300 } }
-    )
-    if (!res.ok) return { skills: [], totalSkills: 0 }
-    const data = await res.json()
-    return { skills: data.skills ?? [], totalSkills: data.total_skills ?? 0 }
+    const supabase = createServerClient()
+    const cutoff = new Date(Date.now() - WINDOW_MS).toISOString()
+
+    let query = supabase
+      .from("skills")
+      .select("*, embedding")
+      .gte("first_seen_at", cutoff)
+
+    if (sort === "new") {
+      query = query.order("first_seen_at", { ascending: false })
+    } else if (sort === "mentions") {
+      query = query.order("mention_count", { ascending: false })
+    }
+
+    const { data: rawSkills, error } = await query.limit(sort === "hot" ? 200 : limit)
+    if (error || !rawSkills) return { skills: [], totalSkills: 0 }
+
+    const now = Date.now()
+    const embeddingMap = new Map<string, number[]>()
+    for (const skill of rawSkills) {
+      if (skill.embedding) embeddingMap.set(skill.id, skill.embedding)
+    }
+
+    let scored: TrendingSkill[] = rawSkills.map((skill) => {
+      const daysSinceFirstSeen = Math.max(1, (now - new Date(skill.first_seen_at).getTime()) / (24 * 60 * 60 * 1000))
+      const hotScore = skill.mention_count * (1 / daysSinceFirstSeen)
+      return {
+        id: skill.id,
+        name: skill.name,
+        description: skill.description,
+        full_instructions: skill.full_instructions,
+        tools_used: skill.tools_used ?? [],
+        triggers: skill.triggers ?? [],
+        source_url: skill.source_url,
+        source_type: skill.source_type,
+        author: skill.author,
+        first_seen_at: skill.first_seen_at,
+        last_crawled_at: skill.last_crawled_at,
+        mention_count: skill.mention_count,
+        is_new: skill.is_new,
+        raw_skill_md: skill.raw_skill_md,
+        category: skill.category,
+        upvote_count: skill.upvote_count,
+        hot_score: Math.round(hotScore * 100) / 100,
+        aidb_content: null,
+      }
+    })
+
+    if (sort === "hot") {
+      scored.sort((a, b) => b.hot_score - a.hot_score)
+      scored = scored.slice(0, limit)
+    }
+
+    // Fetch AIDB content
+    const topEmbeddings = scored.slice(0, 5)
+      .map(s => embeddingMap.get(s.id))
+      .filter((e): e is number[] => e !== undefined)
+
+    if (topEmbeddings.length > 0) {
+      try {
+        const avgEmbedding = topEmbeddings[0].map((_: number, i: number) =>
+          topEmbeddings.reduce((sum: number, emb: number[]) => sum + emb[i], 0) / topEmbeddings.length
+        )
+        const { data: aidbMatches } = await supabase.rpc("match_aidb_content", {
+          query_embedding: avgEmbedding,
+          match_count: 1,
+        })
+        if (aidbMatches && aidbMatches.length > 0) {
+          const m = aidbMatches[0]
+          const sharedContent: AidbContentMatch = {
+            id: m.id,
+            title: m.title,
+            content_type: m.content_type,
+            description: m.description,
+            url: m.url,
+            published_at: m.published_at,
+            transcript: m.transcript ?? null,
+            youtube_video_id: m.youtube_video_id ?? null,
+            relevance_score: m.similarity,
+          }
+          for (let idx = 0; idx < Math.min(5, scored.length); idx++) {
+            scored[idx].aidb_content = sharedContent
+          }
+        }
+      } catch {
+        // Non-critical
+      }
+    }
+
+    const { count: totalSkills } = await supabase
+      .from("skills")
+      .select("*", { count: "exact", head: true })
+
+    return { skills: scored, totalSkills: totalSkills ?? 0 }
   } catch {
     return { skills: [], totalSkills: 0 }
   }
